@@ -1,0 +1,28 @@
+{% extends 'Main/base.html' %}
+{% load i18n %}
+{% load static%}
+
+
+{% block head %}
+	<title>HistoriaUltima</title>
+	<meta name="description" content="Home page for game HistoriaUltima.">
+	<link rel="canonical" href="https://{{domain_name}}{% url 'home' %}" />
+{% endblock %}
+
+{% block content %}
+	<div class="canvas_workspace full_width full_height">
+		<canvas id='canvas' class="full_width" data-vertex-shader="{% static "WebGLEngine/shaders/geometry_bg.vert" %}" data-fragment-shader="{% static "WebGLEngine/shaders/geometry_bg.frag" %}">
+		</canvas>
+	</div>
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<!-- Простой 3д рендерер для сайта -->
+    <script src="{% static 'WebGLEngine/js/webgl_engine_v0.js' %}"></script>
+	<!-- Скрипт для рендеринга на определённом канвасе -->
+    <script src="{% static 'WebGLEngine/js/geometry_bg.js' %}"></script>
+{% endblock %}
