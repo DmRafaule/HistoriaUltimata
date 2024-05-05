@@ -212,7 +212,7 @@ class DI {
 
 	Scene(time, obj){
 		time *= 0.001;
-		var deltaTime = time - start;
+		deltaTime = time - start;
 		start = time;
 		/* Подготовка холста. Установление его размеров, цвета заднего фона, и обновления */
 		U.resizeCanvasToDisplaySize(obj.gl.canvas);
@@ -234,9 +234,19 @@ class DI {
 			// Вычисление матрицы мира и объектов
 			// Вычисляем матрицу проекции
 			var aspect = this.context.canvas.clientWidth / this.context.canvas.clientHeight;
+			//var projectionMatrix = M.orthographic(0,this.gl.canvas.clientWidth, 0, this.gl.canvas.clientHeight, zNear, zFar);
 			var projectionMatrix = M.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 			// Вычисляем матрицу камеры ( или view matrix)
 			var cameraMatrix = M.translation(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
+			var m_xrotation = M.xRotation(M.Degree2Radian(rotation[0]))
+			M.multiplyM(cameraMatrix,m_xrotation,cameraMatrix)
+			var m_yrotation = M.yRotation(M.Degree2Radian(rotation[1]))
+			M.multiplyM(cameraMatrix,m_yrotation,cameraMatrix)
+			var m_zrotation = M.zRotation(M.Degree2Radian(rotation[2]))
+			M.multiplyM(cameraMatrix,m_zrotation,cameraMatrix)
+			// Вычисляем первоначальный размер
+			var m_scaling = M.scaling(scale[0], scale[1], scale[2])
+			M.multiplyM(cameraMatrix,m_scaling,cameraMatrix)
 			// Перемножаем матрицы проекции и камеры 
 			var mvp = M.multiplyM(projectionMatrix, cameraMatrix)
 			// Вычисляем матрицу объекта

@@ -10,13 +10,14 @@
 {% endblock %}
 
 {% block content %}
-	<div class="canvas_workspace full_width full_height">
-		<canvas id='canvas' class="full_width" data-vertex-shader="{% static "WebGLEngine/shaders/geometry_bg.vert" %}" data-fragment-shader="{% static "WebGLEngine/shaders/geometry_bg.frag" %}">
+	<div class="canvas_workspace">
+		<canvas id='canvas' class="borders" data-vertex-shader="{% static "WebGLEngine/shaders/geometry_bg.vert" %}" data-fragment-shader="{% static "WebGLEngine/shaders/geometry_bg.frag" %}">
 		</canvas>
 	</div>
 {% endblock %}
 
 {% block styles %}
+    <link type="text/css" rel="stylesheet" href="{% static 'Main/css/home.css' %}"/>
 {% endblock %}
 
 {% block scripts %}
@@ -24,5 +25,7 @@
 	<!-- Простой 3д рендерер для сайта -->
     <script src="{% static 'WebGLEngine/js/webgl_engine_v0.js' %}"></script>
 	<!-- Скрипт для рендеринга на определённом канвасе -->
-    <script src="{% static 'WebGLEngine/js/geometry_bg.js' %}"></script>
+    <script src="{% static 'Main/js/grid.js' %}"></script>
+	<!-- Скрипт для управления -->
+    <script src="{% static 'Main/js/controlHandler.js' %}"></script>
 {% endblock %}
