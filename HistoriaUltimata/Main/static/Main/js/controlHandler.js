@@ -1,18 +1,50 @@
-canvas.addEventListener('click', (event) => {
-	if (event.button == 0){
-		console.log(cameraPosition)
-	}
-})
-
 let touch_startX = 0
 let touch_startY = 0
 let touch_endX = 0
 let touch_endY = 0
 let isDragCamera = false
 let moveSpeed = 10
-let zoomSpeed = 30
+let zoomSpeed = 20
+
+function MoveToBoundary(){
+	var camX = Math.abs(cameraPosition[0])
+	var camY = Math.abs(cameraPosition[1])
+	var camW = findCameraWidth()
+	var camH = findCameraHeight()
+	if (camX - camW/2 < 0 ){
+		cameraPosition[0] = camW/2 * -1
+	}
+	else if (camX + camW/2 > mapWidth){
+		cameraPosition[0] = (mapWidth - camW/2) * -1
+	}
+	if (camY - camH/2 < 0 ){
+		cameraPosition[1] = camH/2 * -1
+	}
+	else if (camY + camH/2 > mapHeight){
+		cameraPosition[1] = (mapHeight - camH/2) * -1
+	}
+}
 
 // CONTROL BY MOUSE
+// Interact
+canvas.addEventListener('click', (event) => {
+	if (event.button == 0){
+		
+		var mouseScreenX = event.clientX
+		var mouseScreenY = canvas.clientHeight - event.clientY
+		var mouseCameraX = mouseScreenX*(findCameraWidth()/canvas.clientWidth)
+		var mouseCameraY = mouseScreenY*(findCameraHeight()/canvas.clientHeight)
+		var mouseWorldX = Math.abs(cameraPosition[0]) - (findCameraWidth()/2 - mouseCameraX)
+		var mouseWorldY = Math.abs(cameraPosition[1]) - (findCameraHeight()/2 - mouseCameraY)
+		
+		// This is how you can influence to color
+		canvasDI.primitives[0].colorData[0] = 0.8
+		canvasDI.primitives[0].colorData[1] = 0.1
+		canvasDI.primitives[0].colorData[2] = 0.1
+		canvasDI.primitives[0].colorData[3] = 1
+		console.log(canvasDI.primitives[0].colorData)
+	}
+})
 // Move around
 canvas.addEventListener("mousedown", (event) => {
 	touch_startX = event.x
@@ -31,11 +63,12 @@ canvas.addEventListener("mouseup", (event) => {
 });
 
 canvas.addEventListener("mousemove", (event) => {
-	if (isDragCamera){
+	if (isDragCamera ){
 		var signX = touch_startX - event.x
 		var signY = touch_startY - event.y
 		cameraPosition[0] -= signX * deltaTime * moveSpeed
 		cameraPosition[1] += signY * deltaTime * moveSpeed
+		MoveToBoundary()
 	}
 	else{
 		touch_startX = event.x
@@ -49,6 +82,7 @@ canvas.addEventListener("wheel",(event) => {
 	var zoom = cameraPosition[2] + scale_factor
 	zoom = Math.min(Math.max(zoom, cameraHeight), -100);
 	cameraPosition[2] = zoom
+	MoveToBoundary()
 })
 
 // CONTROL BY KEYBOARD
@@ -83,6 +117,7 @@ window.addEventListener("keydown",(event) => {
 		default:
 		  	return; // Quit when this doesn't handle the key event.
 	}
+	MoveToBoundary()
   
 	// Cancel the default action to avoid it being handled twice
 	event.preventDefault();
@@ -106,5 +141,6 @@ canvas.addEventListener("touchmove", (event) => {
 	for (var i = 0; i < event.touches.length; i++){
 		cameraPosition[0] -= (touch_startX - event.touches[i].clientX)*deltaTime * moveSpeed
 		cameraPosition[1] += (touch_startY - event.touches[i].clientY)*deltaTime * moveSpeed
+		MoveToBoundary()
 	}
 });

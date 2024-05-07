@@ -13,5 +13,5 @@ canvas{
 }
 
 .borders{
-    border: 2px solid grey;
+    outline: 2px solid grey;
 }

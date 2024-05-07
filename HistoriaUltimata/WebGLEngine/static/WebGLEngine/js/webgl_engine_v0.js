@@ -91,6 +91,8 @@ class DI {
 			matrixData: null,
 			matrixBuffer: null,
 			numInstances: null,
+			colorData: null,
+			colorBuffer: null,
 		})
 	}
 
@@ -170,7 +172,7 @@ class DI {
 		  const loc = this.attributes.a_mvp + i;
 		  this.context.enableVertexAttribArray(loc);
 		  const offset = i * 16;  // 4 floats на ряд каждый float по 4 байта
-		  this.context.vertexAttribPointer(loc, 4, this.context.FLOAT, false,bytesPerMatrix, offset,);
+		  this.context.vertexAttribPointer(loc, 4, this.context.FLOAT, false,bytesPerMatrix, offset);
 		  // Данный аттрибут изменяется для каждого instance
 		  this.context.vertexAttribDivisor(loc, 1);
 		}
@@ -178,7 +180,9 @@ class DI {
 
 		// Создаём буфер аттрибута для хранения цвета vec4
 		const colorBuffer = this.context.createBuffer();
+		this.primitives[this.curr].colorBuffer = colorBuffer
 		var colorData = new Float32Array(this.primitives[this.curr].numInstances * 4);
+		this.primitives[this.curr].colorData = colorData
 		for (var i = 0; i < this.primitives[this.curr].numInstances; i++){
 			var colors = this.primitives[this.curr].P[i].color;
 			colorData[0 + 4*i] = colors[0];
@@ -234,8 +238,7 @@ class DI {
 			// Вычисление матрицы мира и объектов
 			// Вычисляем матрицу проекции
 			var aspect = this.context.canvas.clientWidth / this.context.canvas.clientHeight;
-			//var projectionMatrix = M.orthographic(0,this.gl.canvas.clientWidth, 0, this.gl.canvas.clientHeight, zNear, zFar);
-			var projectionMatrix = M.perspective(fieldOfViewRadians, aspect, zNear, zFar);
+			var projectionMatrix = M.perspective(viewAngle, aspect, zNear, zFar);
 			// Вычисляем матрицу камеры ( или view matrix)
 			var cameraMatrix = M.translation(cameraPosition[0], cameraPosition[1], cameraPosition[2]);
 			var m_xrotation = M.xRotation(M.Degree2Radian(rotation[0]))
@@ -278,6 +281,9 @@ class DI {
 			});
 			this.context.bindBuffer(this.context.ARRAY_BUFFER, this.primitives[i].matrixBuffer);
 			this.context.bufferSubData(this.context.ARRAY_BUFFER, 0, this.primitives[i].matrixData);
+
+			this.context.bindBuffer(this.context.ARRAY_BUFFER, this.primitives[i].colorBuffer);
+			this.context.bufferSubData(this.context.ARRAY_BUFFER, 0, this.primitives[i].colorData);
 
 			this.context.drawElementsInstanced(this.primitives[i].mode, this.primitives[i].num_indices, this.context.UNSIGNED_SHORT, 0, this.primitives[i].numInstances);
 
